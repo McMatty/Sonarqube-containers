@@ -1,4 +1,4 @@
-version: '0.1'
+version: '3'
 services:
   sonarqube_server:
       image: sonarqube
@@ -6,7 +6,8 @@ services:
         - "7497:7497"
   sonar_scanner_dotnet:
     build: ./dotnet
-    depends_on: sonarqube
+    depends_on: 
+      - sonarqube_server
     volumes:
       - .:/project 
     environment:
@@ -14,7 +15,7 @@ services:
   sonar_scanner_other:
     build: ./other
     depends_on: 
-      - sonarqube
+      - sonarqube_server
     volumes:
       - .:/project
     environment:

@@ -15,7 +15,18 @@ sonarqube container. This project contains some Docker build files, compose file
 
 ## Commands
 
-Until I have written the compose file here are a few of the command liens I am using to start this kit up
+Until I have written the compose file here are a few of the command liens I am using to start this kit up.
+
+1. Build all the docker files included:  
+   1. docker build dotnet -t sonarcli/dotnet  
+   2. docker build other -t sonarcli/other  
+2. docker run -d -p 9000:9000 sonarqube  
+3. Login to http://localhost:9000 using admin:admin the default credentials  
+4. Generate a token for use with the scanners  
+5. Go to the  directory of the project you wish to analyze  
+6. Run one of the below commands depending on project type:  
+   1. .Net projects sonarcli/dotnet  
+   2. All others including Java sonarcli/other  
 
  docker run -it -v C:\github\SecDev\Example:/project -e HOST="http://172.17.0.2:9000" -e PROJECT_KEY=js -e PROJECT_NAME=Javascript -e LOGIN_KEY=\<sonarqube access token\> sonarcli/other  
  docker run -it -v C:\temp:/project -e HOST="http://172.17.0.2:9000" -e LOGIN_KEY=\<sonarqube access token\> sonarcli/dotnet dotnet  
