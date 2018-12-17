@@ -20,3 +20,8 @@ Until I have written the compose file here are a few of the command liens I am u
  docker run -it -v C:\github\SecDev\Example:/project -e HOST="http://172.17.0.2:9000" -e PROJECT_KEY=js -e PROJECT_NAME=Javascript -e LOGIN_KEY=\<sonarqube access token\> sonarcli/other  
  docker run -it -v C:\temp:/project -e HOST="http://172.17.0.2:9000" -e LOGIN_KEY=\<sonarqube access token\> sonarcli/dotnet dotnet  
  docker run -it -v C:\temp:/project -e HOST="http://172.17.0.2:9000"  -e LOGIN_KEY=\<sonarqube access token\> sonarcli/dotnet dotnet_classic  
+
+## Notes
+
+ Currently the docker build files are using insecure channels due to issues getting the certificates for the NZ proxies working.
+ Before going outside a proof of concept this needs to be addressed
