@@ -1,0 +1,21 @@
+version: '0.1'
+services:
+  sonarqube_server:
+      image: sonarqube
+      ports: 
+        - "7497:7497"
+  sonar_scanner_dotnet:
+    build: ./dotnet
+    depends_on: sonarqube
+    volumes:
+      - .:/project 
+    environment:
+      - HOST=http://sonarqube_server:7497
+  sonar_scanner_other:
+    build: ./other
+    depends_on: 
+      - sonarqube
+    volumes:
+      - .:/project
+    environment:
+      - HOST=http://sonarqube_server:7497
