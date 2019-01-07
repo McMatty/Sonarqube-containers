@@ -30,10 +30,10 @@ RUN mkdir -p $SONAR_SCANNER_HOME \
 
 ENV PATH="$SONAR_SCANNER_HOME:$SONAR_SCANNER_HOME/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin:${PATH}"
 
-COPY scan.sh $SONAR_SCANNER_HOME/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/
-RUN dos2unix  $SONAR_SCANNER_HOME/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/scan.sh
+COPY scan $SONAR_SCANNER_HOME/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/
+RUN dos2unix  $SONAR_SCANNER_HOME/sonar-scanner-$SONAR_SCANNER_VERSION-linux/bin/scan
 
 VOLUME $PROJECT_DIR
 WORKDIR $PROJECT_DIR
 
-ENTRYPOINT ["scan.sh"]
+ENTRYPOINT ["scan"]

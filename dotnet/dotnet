@@ -9,6 +9,7 @@ SONAR_HOST="${HOST:-http://localhost:9000}"
 
 if [ -z "$SONAR_LOGIN_KEY"]
 then
+    curl -s -u admin:admin -x POST $HOST/api/user_tokens/revoke -d "name=access_dotnet" --noproxy "*" 
     SONAR_LOGIN_KEY="$(curl -s -u admin:admin -x POST $HOST/api/user_tokens/generate -d "name=access_dotnet" --noproxy "*" | jq -r '.token')"
 fi
 

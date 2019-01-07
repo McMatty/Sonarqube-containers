@@ -9,9 +9,11 @@ SONAR_HOST="${HOST:-http://localhost:9000}"
 
 if [ -z "$SONAR_LOGIN_KEY"]
 then
+    curl -s -u admin:admin -x POST $HOST/api/user_tokens/revoke -d "name=access_dotnet" --noproxy "*" 
     SONAR_LOGIN_KEY="$(curl -s -u admin:admin -x POST $HOST/api/user_tokens/generate -d "name=access_dotnet" --noproxy "*" | jq -r '.token')"
 fi
 
 mono /opt/sonar-scanner-msbuild/SonarScanner.MSBuild.exe begin /d:sonar.host.url=$SONAR_HOST /d:sonar.login=$SONAR_LOGIN_KEY /k:$PROJECT_KEY /n:"$PROJECT_NAME" /v:$PROJECT_VERSION
+nuget restore
 msbuild
 mono /opt/sonar-scanner-msbuild/SonarScanner.MSBuild.exe end /d:sonar.login=$SONAR_LOGIN_KEY

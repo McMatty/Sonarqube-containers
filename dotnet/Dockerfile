@@ -25,6 +25,7 @@ RUN set -x \
     unzip \
     jq \
 	dos2unix \
+  nuget \
     -y 
                 
 RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc --no-check-certificate| gpg --dearmor > microsoft.asc.gpg
