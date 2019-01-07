@@ -1,3 +1,4 @@
+#WARNING: All channels are insecure within this dockerfile due to being unable to get SSL certificates for the corporate proxy to play nice
 FROM openjdk:8u171-jre-stretch
 
 ENV SONAR_SCANNER_MSBUILD_VERSION=4.3.1.1372 \
@@ -22,6 +23,7 @@ RUN set -x \
     mono-complete \
     wget \
     unzip \
+    jq \
 	dos2unix \
     -y 
                 
@@ -53,5 +55,3 @@ RUN dos2unix  $SONAR_SCANNER_MSBUILD_HOME/sonar-scanner-$SONAR_SCANNER_VERSION/b
 
 VOLUME $DOTNET_PROJECT_DIR
 WORKDIR $DOTNET_PROJECT_DIR
-
-#ENTRYPOINT ["scan.sh"]

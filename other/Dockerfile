@@ -1,3 +1,4 @@
+#WARNING: All channels are insecure within this dockerfile due to being unable to get SSL certificates for the corporate proxy to play nice
 FROM openjdk:8u171-jre-stretch
 
 ENV SONAR_SCANNER_VERSION=3.2.0.1227 \    
@@ -15,7 +16,9 @@ RUN set -x \
     apt-transport-https \     
     wget \
     unzip \	
-	dos2unix \
+    curl \
+	  dos2unix \
+    jq \
     -y 
                   
 RUN wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip --no-check-certificate  -O /opt/sonar-scanner-linux.zip 
