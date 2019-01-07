@@ -11,7 +11,20 @@ sonarqube container. This project contains some Docker build files, compose file
 | | dotnet_classic | This is the file used to build and analyse .net class (< 4.5 ) projects
 | other | Dockerfile | Docker build file intended  for all other builds / languages
 | | scan.sh | 
+| sonarqube | Dockerfile | Docker build file for Sonarqube that allows custom plugins and configuration using the base Sonarqube image
 | Root | docker-compose.yml | Docker-compose file that will in the future set everything up
+
+## Commands
+
+You will need to wait for the Sonarqube server to run prior to using the cli containers due to the requirement of connecting.  
+Once the Sonarqube server is up you can run scans via:  
+
+*docker-compose run -e PROJECT_NAME=App1 -e PROJECT_KEY=1234567890 sonar_scanner_dotnet dotnet_classic*  
+
+PROJECT_KEY  = A unique identifier for any project being scanned  
+PROJECT_NAME = The name shown for the project that has been scanned  
+
+To set these you need to use the docker -e flag per variable you pass
 
 ## Notes
 
