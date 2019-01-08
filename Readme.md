@@ -32,3 +32,5 @@ PROJECT_NAME = The name shown for the project that has been scanned
 
  Currently the docker build files are using insecure channels due to issues getting the certificates for the NZ proxies working.
  Before going outside a proof of concept this needs to be addressed
+
+ With the dotnet projects ensure these are clean builds as references can point to the host paths from nuget and restores. These errors will occur in relation to the project.assets.json file for nuget packages.
