@@ -13,6 +13,7 @@ sonarqube container. This project contains some Docker build files, compose file
 | | scan |  This is the file used to build and analyse all other languages outside dot net
 | sonarqube | Dockerfile | Docker build file for Sonarqube that allows custom plugins and configuration using the base Sonarqube image
 | Root | docker-compose.yml | Docker-compose file that will in the future set everything up
+| | Run-analysis.ps1 | A PowerShell wrapper around the docker-compose commands giving a simple menu for the purpose of just static analysis.
 
 ## Commands
 
