@@ -1,5 +1,5 @@
 $sonarqube_host     = "http://localhost:8001"
-$composeFilePath    = "C:\github\Docker\docker-compose.yml"
+#$composeFilePath    = "C:\github\Docker\docker-compose.yml"
 $projectKey         = $null
 $projectName        = $null
 $projectFolder      = $null
@@ -67,7 +67,7 @@ function scan-menu-selection {
 }
 
 function docker-compose-up {
-    $args = "-f", "$composeFilePath", "up"
+    $args = "up"
     Start-Process -FilePath "docker-compose" -ArgumentList $args
 }
 
@@ -81,7 +81,7 @@ function scan {
     $doScan = Read-Host "Confirm you wish to scan $projectFolder Y/N?"
 
     if($doScan.ToLower() -eq "y"){
-        $args = "-f", "$composeFilePath", "run", "-e", "PROJECT_NAME=""$projectName""", "-e", "PROJECT_KEY=$projectKey", "-v", $($projectFolder +':/project') 
+        $args = "run", "-e", "PROJECT_NAME=""$projectName""", "-e", "PROJECT_KEY=$projectKey", "-v", $($projectFolder +':/project') 
         $args += $scanType
         Start-Process -FilePath "docker-compose" -ArgumentList $args
     }
@@ -91,8 +91,7 @@ function display-about {
     Write-Host "                          About" -ForegroundColor Green
     Write-Host "============================================================" -ForegroundColor Green
     Write-Host "The intention of this script is to try and wrap around the docker-compose and other docker components"
-    Write-Host "and hide any complexity you don't need to know about."    
-    Write-Host "and hide any complexity you don't need to know about."    
+    Write-Host "and hide any complexity you don't need to know about." 
     Write-Host ""  
     Write-Host "The underlying technology here in docker containers: "
     Write-Host " -- Postgres database server using a docker volume to persist the data."    
@@ -100,10 +99,14 @@ function display-about {
     Write-Host " -- Sonarqube dotnet and msbuild CLI to provide a scanning of dotnet classic projects, dotnet standard projects and dotnet core projects."    
     Write-Host " -- Sonarqube Java CLI to provides scanning of all other languages supported by Sonarqube." 
     Write-Host ""   
+    Write-Host "To being you need to set the project variables required by Sonarqube in the 'Set required variables' menu option." 
+    Write-Host "Once this is done select the right scanner for the project type and run it." 
+    Write-Host "You can run multiple scanners at once but I would not recommend it as these are all running off docker containers." 
+    Write-Host ""   
 }
 
 function cleanup {
-    $args = "-f", "$composeFilePath", "down "
+    $args = "down "
     Start-Process -FilePath "docker-compose" -ArgumentList $args
 }
 
@@ -125,7 +128,7 @@ function menu-selection {
 
         switch ($selection) {
             0 { exit }
-            1 { display-about }           
+            1 { display-about; menu-selection }           
             2 { $args = "sonar_scanner_dotnet", "dotnet_classic"; scan $args  }
             3 { $args = "sonar_scanner_dotnet", "dotnet"; scan $args  }
             4 { $args = "sonar_scanner_other"; scan $args }
@@ -155,7 +158,7 @@ function loading {
     $origpos.Y += 1
     try
     {
-
+        #Add a timeout
         while ($loading)
         {
             $host.UI.RawUI.CursorPosition = $origpos
