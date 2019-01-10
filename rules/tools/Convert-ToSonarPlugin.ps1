@@ -1,4 +1,4 @@
-Write-Host "Build a thing, please wait..."
+Write-Host "Starting the conversion script" -ForegroundColor Green
 
 $targetPath = $pwd.Path
 
@@ -27,12 +27,12 @@ Expand-Archive $PSScriptRoot/RoslynPluginGenerator.zip $workingFolder
 
 cd $workingFolder
 
-./RoslynPluginGenerator/nuget init $targetPath ./repo
-./RoslynPluginGenerator/nuget sources add -Name temp -Source $workingFolder\repo
+./nuget init $targetPath ./repo
+./nuget sources add -Name temp -Source $workingFolder\repo
 
 $nupkgItems.Name | ForEach-Object {
     $packageName = $_.Split(".")[0]
-    .\RoslynPluginGenerator\RoslynSonarQubePluginGenerator.exe /a:$packageName
+    .\RoslynSonarQubePluginGenerator.exe /a:$packageName
 }
 
 
@@ -42,6 +42,9 @@ if (-not (Test-Path($outputPath))) {
 }
 
 Copy-Item -Path *.jar -Destination $outputPath
+Get-ChildItem -Path $outputPath
 
 cd $targetPath
 Remove-Item $workingFolder -Force -Recurse
+
+Write-Host "Done!"

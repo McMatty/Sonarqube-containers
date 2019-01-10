@@ -14,6 +14,9 @@ sonarqube container. This project contains some Docker build files, compose file
 | sonarqube | Dockerfile | Docker build file for Sonarqube that allows custom plugins and configuration using the base Sonarqube image
 | Root | docker-compose.yml | Docker-compose file that will in the future set everything up
 | | Run-analysis.ps1 | A PowerShell wrapper around the docker-compose commands giving a simple menu for the purpose of just static analysis.
+| rules\tools| Convert-ToSonarPlugin.ps1 | A PowerShell script that will convert a Rosyln rule into a Sonarqube rule package
+| | RoslynPluginGenerator | Zip file containing the binary to convert Rosyln rules to Sonarqube Jar files
+| rules\plugins| *.Jar | Sonarqube static analysis rules that are loaded into the Sonarqube server. Ideally will get a CI build and release folder in future for this
 
 ## Commands
 
