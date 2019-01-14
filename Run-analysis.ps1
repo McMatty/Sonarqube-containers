@@ -1,8 +1,8 @@
-$sonarqube_host     = "http://localhost:8001"
+$sonarqube_host = "http://localhost:8001"
 #$composeFilePath    = "C:\github\Docker\docker-compose.yml"
-$projectKey         = $null
-$projectName        = $null
-$projectFolder      = $null
+$projectKey = $null
+$projectName = $null
+$projectFolder = $null
 
 function display-menu {
     Write-Host "Analysis script menu" -ForegroundColor Green
@@ -17,8 +17,7 @@ function display-menu {
     Write-Host ""
 }
 
-function scan-menu
-{
+function scan-menu {
     Write-Host "Scan menu" -ForegroundColor Green
     Write-Host "====================" -ForegroundColor Green
     Write-Host "1. Set project key "
@@ -43,8 +42,7 @@ function scan-menu-selection {
             2 { $projectName = Read-Host "Set project name: "}
             3 { 
                 $projectFolder = Read-Host "Set project folder:"
-                if (-not (Test-Path $projectFolder))
-                {
+                if (-not (Test-Path $projectFolder)) {
                     Write-Host "$projectFolder is not a valid directory." -ForegroundColor Red
                     $projectFolder = $null
                     scan-menu-selection
@@ -76,12 +74,12 @@ function scan {
 
     if (-not $projectName) {Write-Host "Project name needs to be set"}
     if (-not $projectKey) {Write-Host "Project key needs to be set"}
-    if (-not $projectFolder){Write-Host "Project folder needs to be set"}  
+    if (-not $projectFolder) {Write-Host "Project folder needs to be set"}  0
 
     $doScan = Read-Host "Confirm you wish to scan $projectFolder Y/N?"
 
-    if($doScan.ToLower() -eq "y"){
-        $args = "run", "-e", "PROJECT_NAME=""$projectName""", "-e", "PROJECT_KEY=$projectKey", "-v", $($projectFolder +':/project') 
+    if ($doScan.ToLower() -eq "y") {
+        $args = "run", "-e", "PROJECT_NAME=""$projectName""", "-e", "PROJECT_KEY=$projectKey", "-v", $($projectFolder + ':/project') 
         $args += $scanType
         Start-Process -FilePath "docker-compose" -ArgumentList $args
     }
@@ -111,12 +109,10 @@ function cleanup {
 }
 
 function is-ready {
-    try
-    {
+    try {
         (Invoke-WebRequest -Uri $sonarqube_host | Select-Object StatusCode).StatusCode -eq 200
     }
-    catch
-    {
+    catch {
         $false
     }
 }
@@ -156,23 +152,19 @@ function loading {
     $idx = 0
     $origpos = $host.UI.RawUI.CursorPosition
     $origpos.Y += 1
-    try
-    {
+    try {
         #Add a timeout
-        while ($loading)
-        {
+        while ($loading) {
             $host.UI.RawUI.CursorPosition = $origpos
             Write-Host "This will take a couple of moments to bring all the required containers up, please wait " $scroll[$idx] -NoNewline -ForegroundColor Green
             $idx++
-            if ($idx -ge $scroll.Length)
-            {
+            if ($idx -ge $scroll.Length) {
                 $idx = 0
             }
             $loading = -not (is-ready)       
         }
     }
-    finally
-    {
+    finally {
         $host.UI.RawUI.CursorPosition = $origpos
         [Console]::CursorVisible = $true
     }
@@ -191,13 +183,11 @@ function set-scan-variables {
 }
 
 Clear-Host
-try
-{
+try {
     docker-compose-up
     loading
     main
 }
-finally
-{
+finally {
     cleanup
 }
