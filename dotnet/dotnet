@@ -15,7 +15,14 @@ fi
 
 if [ -n "${SONAR_LOGIN_KEY}" ] 
 then
-    mono /opt/sonar-scanner-msbuild/SonarScanner.MSBuild.exe begin /d:sonar.host.url=$SONAR_HOST /d:sonar.login=$SONAR_LOGIN_KEY /k:$PROJECT_KEY /n:"$PROJECT_NAME" /v:$PROJECT_VERSION
+    mono /opt/sonar-scanner-msbuild/SonarScanner.MSBuild.exe begin /d:sonar.host.url=$SONAR_HOST /d:sonar.login=$SONAR_LOGIN_KEY /k:$PROJECT_KEY /n:"$PROJECT_NAME" /v:$PROJECT_VERSION /d:sonar.verbose=true
+   
+     for f in $(find /tmp/.sonarqube/resources -name *.dll); do
+	    dest=$(echo $f | sed 's/\\/\//g')	   
+        mkdir -p $(dirname $dest)
+	    mv $f $dest
+    done
+   
     dotnet restore
     dotnet build
     dotnet test

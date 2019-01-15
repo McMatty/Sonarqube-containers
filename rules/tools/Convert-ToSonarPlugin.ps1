@@ -1,19 +1,3 @@
-[xml]$ruleTemplate = @"
-<?xml version="1.0" encoding="utf-8"?>
-<rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <rule>
-    <key>SonarqubeExampleRule</key>
-    <name>Rule name</name>
-    <internalKey>SonarqubeExampleRule</internalKey>
-    <description><![CDATA[No description was provided.]]></description>
-    <severity>MAJOR</severity>
-    <cardinality>SINGLE</cardinality>
-    <status>READY</status>
-    <type>CODE_SMELL</type>
-  </rule>
-</rules>
-"@
-
 
 Write-Host "Starting the conversion script" -ForegroundColor Green
 
@@ -47,11 +31,8 @@ Set-Location $workingFolder
 ./nuget sources add -Name temp -Source $workingFolder\repo
 
 $nupkgItems.Name | ForEach-Object {
-    $packageName = $_.Split(".")[0]
-    $ruleTemplate.Save("$pwd/rules.xml")
-    
-
-    .\RoslynSonarQubePluginGenerator.exe /a:$packageName /rules:rules.xml
+    $packageName = $_.Split(".")[0] 
+    .\RoslynSonarQubePluginGenerator.exe /a:$packageName /acceptLicenses
 }
 
 
