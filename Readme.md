@@ -4,7 +4,7 @@ sonarqube container. This project contains some Docker build files, compose file
 
 ## Files
 
-|Folder | File | Description
+| Folder | File | Description
 |---|--|--|
 | dotnet | Dockerfile | Docker build file intended for the .net framework(s) builds using the sonarscanner.msbuild.exe
 | | dotnet | This is the file used to build and analyse .net core projects
