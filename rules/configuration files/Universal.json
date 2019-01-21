@@ -1,0 +1,1440 @@
+{
+  "assignmentExpressionRules": [
+    {
+      "variableType": "System.Security.Cryptography.AesCryptoServiceProvider",
+      "propertyName": "KeySize",
+      "valuePolicy": "Allow",
+      "values": [
+        "256",
+        "512"
+      ],
+      "suggestedValue": "256",
+      "id": "crypto_enc_aes_weak_keysize",
+      "enabled": true,
+      "message": "Encryption key size used for AES must be large enough.",
+      "description":
+        "When using AES encryption, key sizes used should be at least 256 bits. Use of 128 bits is currently allowed but only in backward compatibility scenarios.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    }
+  ],
+  "localDeclarationRules": [
+    {
+      "insecureType": "System.Random",
+      "secureType": "RNGCryptoServiceProvider",
+      "id": "crypto_rng_weak_rng",
+      "enabled": true,
+      "message": "The Random class is a cryptographically weak random number generator.",
+      "description":
+        "When used in the context of crypto, random number generators should be cryptographically secure. The class Random does not meet the requirements and should not be used. Consider using RNGCryptoServiceProvider instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Error"
+    },
+    {
+      "insecureType": "System.Security.Cryptography.X509Certificates.X509Certificate",
+      "secureType": "X509Certificate2",
+      "id": "crypto_certs_weak_hmac",
+      "enabled": true,
+      "message": "The X509Certificate2 class does not support SHA256-based signatures.",
+      "description":
+        "The X509Certificate2 class supports SHA1-based signature algorithms. These are considered weak and inadequate. Consider using RsaCryptoServiceProvider as that supports SHA-256-based signatures.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "insecureType": "System.Security.Cryptography.RijndaelManaged",
+      "secureType": "AesCryptoServiceProvider",
+      "id": "crypto_enc_unapproved_alg_rijndael",
+      "enabled": true,
+      "message": "RijndaelManaged class is not approved for use for symmetric encryption",
+      "description":
+        "The RijndaelManaged class supports algorithm modes which are not FIPS approved. It has also been found weak against certain attacks. Use AesCryptoServiceProvider instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "insecureType": "System.Security.Cryptography.MD5CryptoServiceProvider",
+      "secureType": "SHA256CryptoServiceProvider",
+      "id": "crypto_hash_weak_alg_md5",
+      "enabled": true,
+      "message": "The MD5 hash algorigthm is weak and must not be used.",
+      "description":
+        "The MD5 hash algorithm has been broken and many practical attacks have been found in scenarios using it. Use SHA256CryptoServiceProvider instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "insecureType": "System.Security.Cryptography.SHA1CryptoServiceProvider",
+      "secureType": "SHA256CryptoServiceProvider",
+      "id": "crypto_hash_weak_alg_sha1",
+      "enabled": true,
+      "message": "The SHA1 hash algorigthm is weak and must not be used.",
+      "description":
+        "The SHA1 hash algorithm has been broken and many practical attacks have been found in scenarios using it. Use SHA256CryptoServiceProvider instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    }
+  ],
+  "simpleMemberAccessExpressionRules": [
+    {
+      "nodeSemanticType": "Microsoft.Azure.ActiveDirectory.GraphClient.IUserFetcher",
+      "memberName": "MemberOf",
+      "id": "azure_aad_avoid_memberof",
+      "enabled": true,
+      "message":
+        "The 'memberOf' method is not transitive, i.e. it doesn't return nested groups. As a result, it might lead to security bypass in certain cases.",
+      "description":
+        "The 'memberOf' method is used for checking the group membership of a user. This method is not transitive, i.e. it doesn't return nested groups. As a result, it might lead to security bypass in certain cases. Review if the group membership verification logic in the code would work as intended even when the memberOf method is used. However, it is always recommended to use other API methods listed here: https://msdn.microsoft.com/en-us/library/azure/ad/graph/api/users-operations for checking the group membership.",
+      "helpUrl": "https://msdn.microsoft.com/en-us/library/azure/ad/graph/api/users-operations",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult",
+      "memberName": "AccessToken",
+      "id": "azure_adal_avoid_accesstoken_in_code",
+      "enabled": true,
+      "message":
+        "Explicit usage of accesstoken found in the code: access tokens should be handled securely. It is recommended not to store it separately in a persistent storage like databases or files, unless there is a compelling requirement.",
+      "description":
+        "It is recommended to use ADAL library for acquiring the tokens as it saves them securely in an internal in-memory cache in its default configuration.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult",
+      "memberName": "RefreshToken",
+      "id": "azure_adal_avoid_refreshtoken_in_code",
+      "enabled": true,
+      "message":
+        "Explicit usage of refreshtoken found in the code: refresh tokens should be handled securely. It is recommended not to store it separately in a persistent storage like database and files, unless there is a compelling requirement.",
+      "description":
+        "It is recommended to use ADAL library for acquiring the tokens as it saves them securely in a internal in-memory cache in its default configuration",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "Microsoft.ServiceBus.RelayClientAuthenticationType",
+      "memberName": "None",
+      "id": "azure_sbr_no_client_authentication",
+      "enabled": true,
+      "message":
+        "It is unsafe to use 'RelayClientAuthenticationType.None' as it allows clients to connect to the relay without authentication. Use RelayClientAuthenticationType.RelayAccessToken.",
+      "description":
+        "When using a service bus relays, clients have to authenticate to the relay in order to use it to connect to the on-premise endpoint. If 'None' is used for RelayClientAuthenticationType, it means any client (without credentials) can connect to the relay and attempt to reach the on-premise service.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Xml.XmlDocument",
+      "memberName": "XmlResolver",
+      "id": "appsec_xml_doc_resolver",
+      "enabled": true,
+      "message": "Use XmlResolver carefully in trusted document scenarios. Consider using XmlSecureResolver instead.",
+      "description":
+        "Use XmlResolver carefully in trusted document scenarios. Consider using XmlSecureResolver instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Xml.DtdProcessing",
+      "memberName": "Parse",
+      "id": "appsec_xml_doc_dtdprocessing_parse",
+      "enabled": true,
+      "message":
+        "Do not use Parse option in System.Xml.DtdProcessing. DTD parsing can be exploited towards various DoS and elevation of privilege attacks.",
+      "description":
+        "Do not use Parse option in System.Xml.DtdProcessing. DTD parsing can be exploited towards various DoS and elevation of privilege attacks.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Xml.XmlReaderSettings",
+      "memberName": "ProhibitDtd",
+      "id": "appsec_xml_prohibitdtd_flag",
+      "enabled": true,
+      "message":
+        "Do not set ProhibitDtd property to false. This may increase exposure to DoS and elevation of privilege attacks from DTD parsing.",
+      "description":
+        "Do not set ProhibitDtd property to false. This may increase exposure to DoS and elevation of privilege attacks from DTD parsing.",
+      "helpUrl": "https://msdn.microsoft.com/en-us/library/ms762632(v=vs.85).aspx",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.CipherMode",
+      "memberName": "ECB",
+      "id": "crypto_enc_ciphermode_ecb",
+      "enabled": true,
+      "message": "Do not use ECB mode for symmetric encryption.",
+      "description": "The ECB mode is prone to various crypto attacks. Use a stronger mode such as CBC instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Error"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.RSACryptoServiceProvider",
+      "memberName": "KeySize",
+      "id": "crypto_pki_rsa_keysize",
+      "enabled": true,
+      "message": "Use a keysize of 2048 bits or more for RSA.",
+      "description":
+        "Using keys of size less than 2048 is not recommended for RSA. Crypto using small key sizes increases risk of getting compromised.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Error"
+    },
+    {
+      "nodeSemanticType": "System.IO.Path",
+      "memberName": "Combine",
+      "id": "inpval_file_name_from_user",
+      "enabled": true,
+      "message":
+        "If using end user input to create a filename, please validate it carefully to defend against path traversal attacks.",
+      "description":
+        "When end user input is used to determine a filename, it is possible for malicious users to include metacharacters that can lead the code into opening/overwriting/executing an entirely different file than what was intended.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.Mvc.Controller",
+      "memberName": "Redirect",
+      "id": "inpval_open_redirect_mvc",
+      "enabled": true,
+      "message":
+        "If using end user input to create the redirect URL, please validate it carefully to defend against URL redirection attacks.",
+      "description":
+        "When end user input is used to determine a redirect URL, it is possible for malicious users to craft payloads that can lead to phishing and elevation of privilege attacks. Make sure you validate that the targetURL is local.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.HttpCookie",
+      "memberName": "Secure",
+      "id": "authn_web_cookie_secure_flag",
+      "enabled": true,
+      "message": "Set secure to true to reduce risk of sending cookie over plain HTTP.",
+      "description":
+        "Setting secure flag to true for a cookie ensures that the browser will never send it over a non-HTTPS connection. This protects the cookie from network layer disclosure.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.HttpCookie",
+      "memberName": "HttpOnly",
+      "id": "authn_web_cookie_httponly",
+      "enabled": true,
+      "message": "Set httponly to true to reduce risk of JavaScript accessing the cookies",
+      "description": "Set httponly to true to reduce risk of JavaScript accessing the cookies",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.HttpCookie",
+      "memberName": "Expires",
+      "id": "authn_web_cookie_expiry",
+      "enabled": true,
+      "message":
+        "Set cookie expiry to be as short as possible...especially if the cookie is being used for authenticated sessions.",
+      "description":
+        "Long cookie expiry periods increase the exposure and exploitability of a cookie in the event that it gets stolen.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.Configuration.PagesSection",
+      "memberName": "ValidateRequest",
+      "id": "xss_web_validaterequest_flag",
+      "enabled": true,
+      "message":
+        "ValidateRequest should not be set to false. It is a critical defense against XSS attacks in Asp.Net Web Forms.",
+      "description":
+        "ValidateRequest should not be set to false. It is a critical defense against XSS attacks in Asp.Net Web Forms.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.Configuration.FormsProtectionEnum",
+      "memberName": "None",
+      "id": "authn_web_formsprotection_none",
+      "enabled": true,
+      "message": "FormsProtection should set to FormsProtectionEnum.All.",
+      "description":
+        "FormsProtection should set to FormsProtectionEnum.All for adequately protecting cookies against various crypto attacks.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.Configuration.FormsProtectionEnum",
+      "memberName": "Encryption",
+      "id": "authn_web_formsprotection_encryption",
+      "enabled": true,
+      "message": "FormsProtection should set to FormsProtectionEnum.All.",
+      "description":
+        "FormsProtection should set to FormsProtectionEnum.All for adequately protecting cookies against various crypto attacks.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.Configuration.FormsProtectionEnum",
+      "memberName": "Validation",
+      "id": "authn_web_formsprotection_validation",
+      "enabled": true,
+      "message": "FormsProtection should set to FormsProtectionEnum.All.",
+      "description":
+        "FormsProtection should set to FormsProtectionEnum.All for adequately protecting cookies against various crypto attacks.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Data.CommandType",
+      "memberName": "Text",
+      "id": "sqli_cmdtype_text",
+      "enabled": true,
+      "message": "Careful! Using the Text commandType exposes code to risks of SQL injection.",
+      "description":
+        "Validate user input being included as part of a SQL query. Do not concatenate user inputs directly into query strings...use parameterized queries instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Data.Entity.Database",
+      "memberName": "ExecuteSqlCommand",
+      "id": "sqli_execsqlcmd_ef",
+      "enabled": true,
+      "message": "Careful! Using ExecuteSql with user input may lead to SQL Injection attacks.",
+      "description":
+        "Validate user input being included as part of a SQL query. Do not concatenate user inputs directly into query strings...use parameterized queries instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Data.Entity.Database",
+      "memberName": "ExecuteSqlCommandAsync",
+      "id": "sqli_execsqlcmd_async_ef",
+      "enabled": true,
+      "message": "Careful! Using ExecuteSql with user input may lead to SQL Injection attacks.",
+      "description":
+        "Validate user input being included as part of a SQL query. Do not concatenate user inputs directly into query strings...use parameterized queries instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Data.CommandType",
+      "memberName": "StoredProcedure",
+      "id": "sqli_cmdtype_sp",
+      "enabled": true,
+      "message":
+        "Careful! If user input is concatenated directly inside stored procedure when using dynamic queries it may lead to SQL Injection.",
+      "description":
+        "Validate user input being included as part of a SQL query. Do not concatenate user inputs directly into query strings...use parameterized queries instead.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Web.Mvc.HtmlHelper",
+      "memberName": "Raw",
+      "id": "xss_raw_html_mvc_razor",
+      "enabled": true,
+      "message": "Try to avoid this method as it emits the HTML without encoding.",
+      "description": "Try to avoid this method as it emits the HTML without encoding.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebRequest",
+      "memberName": "Create",
+      "id": "dp_use_https_webrequest",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "BaseAddress",
+      "id": "dp_use_https_baseaddress_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadData",
+      "id": "dp_use_https_downloaddata_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadDataAsync",
+      "id": "dp_use_https_downloaddataasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadDataTaskAsync",
+      "id": "dp_use_https_downloaddatataskasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadFile",
+      "id": "dp_use_https_downloadfile_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadFileAsync",
+      "id": "dp_use_https_downloadfileasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadFileTaskAsync",
+      "id": "dp_use_https_downfiletaskaasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadString",
+      "id": "dp_use_https_downloadstring_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadStringAsync",
+      "id": "dp_use_https_downloadstringasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "DownloadStringTaskAsync",
+      "id": "dp_use_https_downloadstringtaskasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "GetWebRequest",
+      "id": "dp_use_https_getwebrequest_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadData",
+      "id": "dp_use_https_uploaddata_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadDataAsync",
+      "id": "dp_use_https_uploaddataasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadDataTaskAsync",
+      "id": "dp_use_https_uploaddatataskasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadFile",
+      "id": "dp_use_https_uploadfile_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadFileAsync",
+      "id": "dp_use_https_uploadfileasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadFileTaskAsync",
+      "id": "dp_use_https_uploadfiletaskasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadString",
+      "id": "dp_use_https_uploadstring_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadStringAsync",
+      "id": "dp_use_https_uploadstringasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadStringTaskAsync",
+      "id": "dp_use_https_uploadstringtaskasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadValues",
+      "id": "dp_use_https_uploadvalues_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadValuesAsync",
+      "id": "dp_use_https_uploadvaluesasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.WebClient",
+      "memberName": "UploadValuesTaskAsync",
+      "id": "dp_use_https_uploadvaluestaskasync_webclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "BaseAddress",
+      "id": "dp_use_https_baseaddress_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "DeleteAsync",
+      "id": "dp_use_https_deleteasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "GetAsync",
+      "id": "dp_use_https_getasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "GetByteArrayAsync",
+      "id": "dp_use_https_getbytearrayasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "GetStreamAsync",
+      "id": "dp_use_https_getstreamasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "GetStringAsync",
+      "id": "dp_use_https_getstringasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "PostAsync",
+      "id": "dp_use_https_postasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpClient",
+      "memberName": "PutAsync",
+      "id": "dp_use_https_putasync_httpclient",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Net.Http.HttpRequestMessage",
+      "memberName": "RequestUri",
+      "id": "dp_use_https_requesturi_httprequestmessage",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.DataProtectionScope",
+      "memberName": "LocalMachine",
+      "id": "crypto_dpapi_avoid_localmachine_flag",
+      "enabled": true,
+      "message":
+        "Use DataProtectionScope.CurrentUser. LocalMachine will open gates to all the processes running on the computer to unprotect the data.",
+      "description":
+        "Use DataProtectionScope.CurrentUser. LocalMachine will open gates to all the processes running on the computer to unprotect the data.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.PaddingMode",
+      "memberName": "ANSIX923",
+      "id": "crypto_enc_avoid_padding_mode_ansix923",
+      "enabled": true,
+      "message": "Try to use PKCS7 with AES wherever possible.",
+      "description":
+        "Use the PKCS7 padding mode with AES wherever possible. Other padding modes may lead to subtle crypto vulnerabilities.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.PaddingMode",
+      "memberName": "ISO10126",
+      "id": "crypto_enc_avoid_padding_mode_iso10126",
+      "enabled": true,
+      "message": "Try to use PKCS7 with AES wherever possible.",
+      "description":
+        "Use the PKCS7 padding mode with AES wherever possible. Other padding modes may lead to subtle crypto vulnerabilities.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.PaddingMode",
+      "memberName": "None",
+      "id": "crypto_enc_avoid_padding_mode_none",
+      "enabled": true,
+      "message": "Try to use PKCS7 with AES wherever possible.",
+      "description":
+        "Use the PKCS7 padding mode with AES wherever possible. Other padding modes may lead to subtle crypto vulnerabilities.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticType": "System.Security.Cryptography.PaddingMode",
+      "memberName": "Zeros",
+      "id": "crypto_enc_avoid_padding_mode_zeros",
+      "enabled": true,
+      "message": "Try to use PKCS7 with AES wherever possible.",
+      "description":
+        "Use the PKCS7 padding mode with AES wherever possible. Other padding modes may lead to subtle crypto vulnerabilities.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    }
+  ],
+  "simpleAssignmentExpressionRules": [
+    {
+      "nodeSemanticParentType": "Microsoft.WindowsAzure.Storage.SharedAccessAccountPolicy",
+      "propertyName": "Protocols",
+      "checkRight": true,
+      "insecureValue": "SharedAccessProtocol.HttpsOrHttp",
+      "id": "azure_storage_sas_use_https",
+      "enabled": true,
+      "message":
+        "The 'HttpsOrHttp' option is insecure as it allows use of Http (plaintext) for content request and transfer. Use SharedAccessProtocol.HttpsOnly.",
+      "description":
+        "Use of 'HttpsOrHttp' implies that both the request content and any headers (including SAS tokens) will get transferred over plaintext. Instead use SharedAccessProtocol.HttpsOnly to ensure the transfer is encrypted.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Error"
+    },
+    {
+      "nodeSemanticParentType": "Microsoft.WindowsAzure.Storage.SharedAccessAccountPolicy",
+      "propertyName": "SharedAccessExpiryTime",
+      "checkRight": false,
+      "insecureValue": "",
+      "id": "azure_storage_sastoken_validity_too_long",
+      "enabled": true,
+      "message": "Use shortest possible token lifetime appropriate for the scenario. See AAD default token expiration times here.",
+      "description":
+        "It is recommended to set appropriate and short lifetime for tokens. Typically access tokens should have a validity period of a few hours (ideally kept as small as practical).",
+      "helpUrl": "https://docs.microsoft.com/en-us/Azure/active-directory/active-directory-configurable-token-lifetimes",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticParentType": "Microsoft.WindowsAzure.Storage.Blob.BlobContainerPermissions",
+      "propertyName": "PublicAccess",
+      "checkRight": true,
+      "insecureValue": "BlobContainerPublicAccessType.Blob",
+      "id": "azure_storage_blob_public_access",
+      "enabled": true,
+      "message":
+        "The chosen setting for BlobContainerPublicAccessType  will allow 'public' access of blobs within this container (without requiring an access token). This should be carefully evaluated in the context of the scenario.",
+      "description":
+        "The chosen setting for BlobContainerPublicAccessType  will allow 'public' access of blobs within this container (without requiring an access token). It is recommended to use BlobContainerPublicAccessType.Off unless it absolutely required. Creation of containers with unrestricted access should be carefully evaluated in the context of the scenario.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeSemanticParentType": "Microsoft.WindowsAzure.Storage.Blob.BlobContainerPermissions",
+      "propertyName": "PublicAccess",
+      "checkRight": true,
+      "insecureValue": "BlobContainerPublicAccessType.Container",
+      "id": "azure_storage_container_public_access",
+      "enabled": true,
+      "message":
+        "The chosen setting for BlobContainerPublicAccessType  will allow 'public' access of blobs within this container (without requiring an access token). This should be carefully evaluated in the context of the scenario.",
+      "description":
+        "The chosen setting for BlobContainerPublicAccessType  will allow 'public' access of blobs within this container (without requiring an access token). It is recommended to use BlobContainerPublicAccessType.Off unless it absolutely required. Creation of containers with unrestricted access should be carefully evaluated in the context of the scenario.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    }
+  ],
+  "simpleObjectCreationExpressionRules": [
+    {
+      "nodeType": "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext",
+      "matches": [
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 2,
+            "type": "bool",
+            "value": "false",
+            "considerValue": true
+          }
+        },
+        {
+          "argumentsCount": 3,
+          "argument": {
+            "position": 2,
+            "type": "bool",
+            "value": "false",
+            "considerValue": true
+          }
+        }
+      ],
+      "id": "azure_aad_authority_validation_turned_off",
+      "enabled": true,
+      "message": "Authority validation should not be disabled for AAD security tokens.",
+      "description":
+        "Disabling authority validation implies that any well-formed token will get accepted regardless of which authority signed the token. This is rarely desirable. Do not explicitly set the validation to 'false' in the AuthenticationContext. The default value is 'true'.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext",
+      "matches": [
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 2,
+            "type": "Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 3,
+          "argument": {
+            "position": 3,
+            "type": "Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "azure_aad_avoid_custom_token_caching",
+      "enabled": true,
+      "message": "Custom token cache identified. Allow ADAL to transparently handle any caching needs for tokens.",
+      "description":
+        "Do not use custom caches for ADAL tokens. The ADAL library uses a in-memory cache for the storage of tokens when no custom tokencache is provided explicitly to its AuthenticationContext constructor.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Web.Security.FormsAuthenticationTicket",
+      "matches": [
+        {
+          "argumentsCount": 6,
+          "argument": {
+            "position": 4,
+            "type": "System.DateTime",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 7,
+          "argument": {
+            "position": 4,
+            "type": "System.DateTime",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "authn_web_formsauthticket_timeout",
+      "enabled": true,
+      "message": "Mindful about the expiration time. Keep it short",
+      "description": "Mindful about the expiration time. Keep it short",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Web.HttpCookie",
+      "matches": [
+        {
+          "argumentsCount": 1,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "authn_web_cookie_create_settings_1",
+      "enabled": true,
+      "message":
+        "Set secure property to true wherever possible. Set HttpOnly to true wherever possible. Set shorter expiry time wherever possible.",
+      "description":
+        "Set secure property to true wherever possible. Set HttpOnly to true wherever possible. Set shorter expiry time wherever possible.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Web.HttpCookie",
+      "matches": [
+        {
+          "argumentsCount": 1,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "authn_web_cookie_create_settings_2",
+      "enabled": true,
+      "message":
+        "Set secure property to true wherever possible. Set HttpOnly to true wherever possible. Set shorter expiry time wherever possible.",
+      "description":
+        "Set secure property to true wherever possible. Set HttpOnly to true wherever possible. Set shorter expiry time wherever possible.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Data.SqlClient.SqlCommand",
+      "matches": [
+        {
+          "argumentsCount": 1,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 3,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 4,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 5,
+          "argument": {
+            "position": 1,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "sqli_sqlcmd_create_settings_1",
+      "enabled": true,
+      "message":
+        "Do an input validation before using the user input in a query. Do not concatenate user inputs directly. Use Parameterized queries.",
+      "description":
+        "Do an input validation before using the user input in a query. Do not concatenate user inputs directly. Use Parameterized queries.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Data.SqlClient.SqlCommand",
+      "matches": [
+        {
+          "argumentsCount": 1,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 3,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 4,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 5,
+          "argument": {
+            "position": 1,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "sqli_sqlcmd_create_settings_2",
+      "enabled": true,
+      "message":
+        "Do an input validation before using the user input in a query. Do not concatenate user inputs directly. Use Parameterized queries.",
+      "description":
+        "Do an input validation before using the user input in a query. Do not concatenate user inputs directly. Use Parameterized queries.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Net.Http.HttpRequestMessage",
+      "matches": [
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 2,
+            "type": "string",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 2,
+            "type": "System.Uri",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "dp_use_https_httprequestmessage_1",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    },
+    {
+      "nodeType": "System.Net.Http.HttpRequestMessage",
+      "matches": [
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 2,
+            "type": "System.String",
+            "value": "",
+            "considerValue": false
+          }
+        },
+        {
+          "argumentsCount": 2,
+          "argument": {
+            "position": 2,
+            "type": "System.Uri",
+            "value": "",
+            "considerValue": false
+          }
+        }
+      ],
+      "id": "dp_use_https_httprequestmessage_2",
+      "enabled": true,
+      "message": "Use HTTPS instead of HTTP.",
+      "description":
+        "Using HTTPS ensures that the server is authentic and that the data transferred is encrypted in transit. Do not use plain HTTP.",
+      "helpUrl": "https://aka.ms/acecrc",
+      "severity": "Warning"
+    }
+  ],
+  "insecureXmlConfigRules": [
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//machineKey[string-length(@decryptionKey) >= 48 or string-length(@validationKey) >= 48]",
+      "id": "xml_webconfig_secret_1",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='setting' and matches(@value,'.*(User ID|uid|UserId).*(Password|[^a-z]pwd)=[^$%&gt;@&quot;;\\[\\{][^;/&quot;]{7,128}.*','i')]",
+      "id": "xml_webconfig_secret_2",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='setting' and matches(@connectionString,'.*(User ID|uid|UserId).*(Password|[^a-z]pwd)=[^$%&gt;@&quot;;\\[\\{][^;/&quot;]{7,128}.*','i')]",
+      "id": "xml_webconfig_secret_3",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='value' and matches(text(),'.*(User ID|uid|UserId).*(Password|[^a-z]pwd)=[^$%&gt;@&quot;;\\[\\{][^;/&quot;]{7,128}.*','i')]",
+      "id": "xml_webconfig_secret_4",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='setting' or lower-case(name())='add') and (matches(@value,'^[a-zA-Z0-9/+]{86}==') or matches(@value,'[=][a-zA-Z0-9/+]{86}==') )]",
+      "id": "xml_webconfig_secret_5",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='setting' or lower-case(name())='add') and (matches(@connectionString,'^[a-zA-Z0-9/+]{86}==') or matches(@connectionString,'[=][a-zA-Z0-9/+]{86}==') )]",
+      "id": "xml_webconfig_secret_6",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='value' and (matches(text(),'^[a-zA-Z0-9/+]{86}==') or matches(text(),'[=][a-zA-Z0-9/+]{86}==') )]",
+      "id": "xml_webconfig_secret_7",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='connectionString' and (matches(text(),'^[a-zA-Z0-9/+]{86}==') or matches(text(),'[=][a-zA-Z0-9/+]{86}==') )]",
+      "id": "xml_webconfig_secret_8",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='setting' or lower-case(name())='add') and (matches(@value,'^[a-zA-Z0-9/+]{43}=') or matches(@value,'[=][a-zA-Z0-9/+]{43}=') )]",
+      "id": "xml_webconfig_secret_9",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='setting' or lower-case(name())='add') and (matches(@connectionString,'^[a-zA-Z0-9/+]{43}=') or matches(@connectionString,'[=][a-zA-Z0-9/+]{43}=') )]",
+      "id": "xml_webconfig_secret_10",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='value' and (matches(text(),'^[a-zA-Z0-9/+]{43}=') or matches(text(),'[=][a-zA-Z0-9/+]{43}=') )]",
+      "id": "xml_webconfig_secret_11",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='connectionString' and (matches(text(),'^[a-zA-Z0-9/+]{43}=') or matches(text(),'[=][a-zA-Z0-9/+]{43}=') )]",
+      "id": "xml_webconfig_secret_12",
+      "enabled": true,
+      "message": "Issue: Password in Configuration File.\nDescription: Storing a plain-text password in a configuration file allows anyone who can read the file access to the password-protected resource.\nRecommendation: A password or secret should never be stored in plain-text.\nIt is recommended to use Windows Data Protection application programming interface (DPAPI) to protect sensitive application entries in configuration files or store the secrets and password using Azure Key Vault.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//httpRuntime[@maxRequestLength>4096]",
+      "id": "xml_webconfig_DoS_1",
+      "enabled": true,
+      "message": "Issue: MaxRequestLength set to a large value.\nDescription: The maxRequestLength attribute specifies the limit for the input stream buffering threshold, in KB.\nThis limit can be used to prevent denial of service attacks that are caused, for example, by users posting large files to the server.\nRecommendation: It is recommended to set maxRequestLength to as minimum as possible value based on business requirements.\nThe recommended value is 4096(4MB)",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//requestLimits[@maxAllowedContentLength>30000000]",
+      "id": "xml_webconfig_DoS_2",
+      "enabled": true,
+      "message": "Issue: maxAllowedContentLength set to a large value.\nDescription: The maxAllowedContentLength attribute specifies the maximum length of content in a request, in bytes.\nRecommendation: It is recommended to set value of 'maxAllowedContentLength' to as minimum as possible based on business requirements.\nThe recommended value is 30000000 (28.6 MB)",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='security' and lower-case(@relayClientAuthenticationType)='none']",
+      "id": "xml_webconfig_auth_1",
+      "enabled": true,
+      "message": "Issue: Missing Authentication\nDescription: The value of 'relayClientAuthenticationType' is set to 'None' which allows clients to connect to the Service Bus without authentication.\nRelayClientAuthenticationType describes whether clients of a service are required to present a security token issued by Azure Access Control to the Azure Service Bus when sending messages.\nRecommendation: It is recommended to set value of relayClientAuthenticationType to 'RelayAccessToken'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='add' or lower-case(name())='setting') and (matches(lower-case(@value),'.*;\\s*encrypt\\s*=\\s*true\\s*;.*') and matches(lower-case(@value),'.*;?\\s*trustservercertificate\\s*=\\s*true\\s*;.*'))]",
+      "id": "xml_webconfig_sqlssl_1",
+      "enabled": true,
+      "message": "Issue: Database Server Identity Verification Disabled\nDescription: The database connection string doesn't enforce the client to validate the identity of the database server.\nWhen trustServerCertificate is set to true, the connection is not verified for the identity of the server and is susceptible to 'man-in-the-middle' attacks.\nRecommendation: Specify parameters to encrypt the connection and not to trust the server certificate by setting 'Encrypt=true'' and 'trustServerCertificate=False'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='add' or lower-case(name())='setting') and (matches(lower-case(@value),'.*.database.windows.net;.*') and matches(lower-case(@value),'.*;\\s*?encrypt\\s*?=\\s*?false\\s*?;.*'))]",
+      "id": "xml_webconfig_sqlssl_2",
+      "enabled": true,
+      "message": "Issue: Database Server Identity Verification Disabled\nDescription: The database connection string doesn't enforce the client to validate the identity of the database server.\nWhen trustServerCertificate is set to true, the connection is not verified for the identity of the server and is susceptible to 'man-in-the-middle' attacks.\nRecommendation: Specify parameters to encrypt the connection and not to trust the server certificate by setting 'Encrypt=true'' and 'trustServerCertificate=False'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='add' or lower-case(name())='setting') and (matches(lower-case(@connectionString),'.*;\\s*encrypt\\s*=\\s*true\\s*;.*') and matches(lower-case(@connectionString),'.*;?\\s*trustservercertificate\\s*=\\s*true\\s*;.*'))]",
+      "id": "xml_webconfig_sqlssl_3",
+      "enabled": true,
+      "message": "Issue: Database Server Identity Verification Disabled\nDescription: The database connection string doesn't enforce the client to validate the identity of the database server.\nWhen trustServerCertificate is set to true, the connection is not verified for the identity of the server and is susceptible to 'man-in-the-middle' attacks.\nRecommendation: Specify parameters to encrypt the connection and not to trust the server certificate by setting 'Encrypt=true'' and 'trustServerCertificate=False'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='add' or lower-case(name())='setting') and (matches(lower-case(@connectionString),'.*.database.windows.net;.*') and matches(lower-case(@connectionString),'.*;\\s*?encrypt\\s*?=\\s*?false\\s*?;.*'))]",
+      "id": "xml_webconfig_sqlssl_4",
+      "enabled": true,
+      "message": "Issue: Database Server Identity Verification Disabled\nDescription: The database connection string doesn't enforce the client to validate the identity of the database server.\nWhen trustServerCertificate is set to true, the connection is not verified for the identity of the server and is susceptible to 'man-in-the-middle' attacks.\nRecommendation: Specify parameters to encrypt the connection and not to trust the server certificate by setting 'Encrypt=true'' and 'trustServerCertificate=False'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[(lower-case(name())='add' or lower-case(name())='setting') and (matches(lower-case(@value),'.*\\s*defaultendpointsprotocol\\s*=\\s*http\\s*;.*'))]",
+      "id": "xml_webconfig_storagehttp_1",
+      "enabled": true,
+      "message": "Issue: Storage accessed over HTTP\nDescription: It has been observed that plain-text HTTP protocol is being used to access Azure Storage.\nAzure storage should always be accessed over HTTPS.\nRecommendation:It is highly recommended to use HTTPS while connecting to Azure storage by setting the value of DefaultEndpointsProtocol to 'https'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='add' and (matches(lower-case(@connectionString),'.*\\s*defaultendpointsprotocol\\s*=\\s*http\\s*;.*'))]",
+      "id": "xml_webconfig_storagehttp_2",
+      "enabled": true,
+      "message": "Issue: Storage accessed over HTTP\nDescription: It has been observed that plain-text HTTP protocol is being used to access Azure Storage.\nAzure storage should always be accessed over HTTPS.\nRecommendation:It is highly recommended to use HTTPS while connecting to Azure storage by setting the value of DefaultEndpointsProtocol to 'https'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+    {
+      "fileNameMatch": "*.config",
+      "xPath": "//package[@id='Microsoft.IdentityModel.Clients.ActiveDirectory' and (@version='3.11.305310302-alpha' or @version='3.10.305231913' or @version='3.10.305161347' or @version='3.10.305110106' or @version='3.5.208051316-alpha' or @version='3.5.208012240-alpha' or @version='3.5.207081303-alpha' or @version='3.4.206191646-alpha' or @version='3.3.205061641-alpha' or @version='3.2.204281119-alpha' or @version='3.1.203031538-alpha' or @version='3.0.110281957-alpha' or @version='2.27.306291202' or @version='2.26.305102204' or @version='2.26.305100852' or @version='2.25.305061457' or @version='2.21.301221612' or @version='2.20.301151232' or @version='2.19.208020213' or @version='2.18.206251556' or @version='2.17.206230854' or @version='2.16.204221202' or @version='2.15.204151539' or @version='2.14.201151115' or @version='2.13.112191810' or @version='2.12.111071459' or @version='2.11.10918.1222' or @version='2.10.10910.1511' or @version='2.9.10826.1824' or @version='2.8.10804.1442-rc' or @version='2.7.10707.1513-rc' or @version='2.6.2-alpha' or @version='2.6.1-alpha' or @version='2.5.1-alpha')]",
+      "id": "xml_webconfig_aad_1",
+      "enabled": true,
+      "message": "Issue: Vulnerable ADAL version\nDescription: The application is using vulnerable version of ADAL library.\nSome versions of ADAL .NET library contain serious security flaw that can result in elevation of privilege. Your application is using one of the vulnerable versions.\nRecommendation: Update Microsoft.IdentityModel.Clients.ActiveDirectory(ADAL).NET library to the latest version.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//compilation[@debug='true']",
+      "id": "xml_webconfig_misconfig_1",
+      "enabled": true,
+      "message": "Issue: Debug flag enabled\nDescription: Disable tracing and debugging in production applications to prevent the inappropriate distribution of sensitive information.\nWhen debugging and tracing is enabled on an application, information disclosure can result from full stack traces, verbose error messages and other sensitive information output as part of the debug functionality of the application.\nRecommendation: Production binaries should be compiled without debug and trace enabled. This can be accomplished by setting the value of 'Debug' = 'false' and trace 'enabled' = 'false'.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//system.web/trace[@enabled='true']",
+      "id": "xml_webconfig_misconfig_2",
+      "enabled": true,
+      "message": "Issue: Trace flag enabled\nDescription: Disable tracing and debugging in production applications to prevent the inappropriate distribution of sensitive information.\nWhen debugging and tracing is enabled on an application, information disclosure can result from full stack traces, verbose error messages and other sensitive information output as part of the debug functionality of the application.\nRecommendation: Production binaries should be compiled without debug and trace enabled. This can be accomplished by setting the value of 'Debug' = 'false' and trace 'enabled' = 'false'.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//system.web/sessionState[@timeout>30]",
+      "id": "xml_webconfig_misconfig_3",
+      "enabled": true,
+      "message": "Issue: Session timeout value too long\nDescription: Idle Session timeout value should be set to as low as possible.\nThe idle timeout specifies the maximum period of inactivity before the session ends. It limits the time period in which an attacker can guess and use a valid session from another user.\nRecommendation: The maximum idle timeout should be 30 minutes or less, depending on the sensitivity of information.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//httpRuntime[@requestValidationMode<4.5]",
+      "id": "xml_webconfig_misconfig_4",
+      "enabled": true,
+      "message": "Issue: Request validation mode < 4.5\nDescription: ASP.NET ships with a simplified request validation enabled by default.\nRequestValidation must be enabled in ASP.net application to reduce the risk of code injection attacks.\nDisabling this request validation is prohibited, as is downgrading from the default (4.5) to 2.0 (which validates a subset of requests).\nRecommendation: RequestValidation v4.5 in default mode is a required configuration. It is enabled by default and should not be explicitly disabled.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//pages[@validateRequest='false']",
+      "id": "xml_webconfig_misconfig_5",
+      "enabled": true,
+      "message": "Issue: Request validation disabled\nDescription: ASP.NET ships with a simplified request validation enabled by default.\nRequestValidation must be enabled in ASP.net application to reduce the risk of code injection attacks.\nDisabling this request validation is prohibited, as is downgrading from the default (4.5) to 2.0 (which validates a subset of requests).\nRecommendation: RequestValidation v4.5 in default mode is a required configuration. It is enabled by default and should not be explicitly disabled.",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='add' and lower-case(@name)='x-xss-protection' and matches(@value,'^\\s*0.*')]",
+      "id": "xml_webconfig_misconfig_6",
+      "enabled": true,
+      "message": "Issue: X-XSS-Protection disabled.\nDescription: IE8+ browsers include a cross-site scripting filter which is on by default.This filter must not be disabled.\nRecommendation: If the header 'X-XSS-Protection' is set, make sure it is not set to a value other than '1'",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    },
+	{
+      "fileNameMatch": "*.config",
+      "xPath": "//*[lower-case(name())='add' and lower-case(@name)='access-control-allow-origin' and matches(@value,'^\\s*\\*\\s*')]",
+      "id": "xml_webconfig_misconfig_7",
+      "enabled": true,
+      "message": "Issue: Overly permissive CORS policy\nDescription: HTML5 makes it possible for javascript to access api across domain through 'Access-Control-Allow-Origin' header. This header defines rules for making cross-domain requests.\nRecommendation: It is recommended to use a specific list of trusted domains as value 'Access-Control-Allow-Origin' instead of wild-card('*').",
+      "description": "",
+      "helpUrl": "https://microsoft.sharepoint.com/teams/acecrc/Pages/Application%20TCPs/Landing.aspx",
+      "severity": "Error"
+    }
+	
+  ],
+  "rulesVersionDateTime": "2017-03-31T10:30:00Z"
+}
