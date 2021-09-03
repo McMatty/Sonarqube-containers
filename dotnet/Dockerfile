@@ -1,5 +1,5 @@
 #WARNING: All channels are insecure within this dockerfile due to being unable to get SSL certificates for the corporate proxy to play nice
-FROM openjdk:8u171-jre-stretch
+FROM openjdk:8-jre-stretch
 
 ENV SONAR_SCANNER_MSBUILD_VERSION=4.3.1.1372 \
     SONAR_SCANNER_VERSION=3.2.0.1227 \
